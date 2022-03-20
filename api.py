@@ -23,41 +23,8 @@ parser.add_argument('tg_id', required=True, type=int)
 
 class Briefcase(Resource):
     def get(self):
-        args = parser.parse_args()
-        news = {
-            'date': args['date'],
-            'length_invest_horizon': args['length_invest_horizon'],
-            'budget': args['budget'],
-            'tg_id': args['tg_id'],
-            'shorts': args['shorts']
-        }
-        if int(news['length_invest_horizon']) == 1:
-            mon_stoks = int(news['budget']) * 0.2
-            mon_bonds = int(news['budget']) * 0.8
 
-        elif int(news['length_invest_horizon']) == 3:
-            mon_stoks = int(news['budget']) * 0.3
-            mon_bonds = int(news['budget']) * 0.7
-
-        elif int(news['length_invest_horizon']) == 5:
-            mon_stoks = int(news['budget']) * 0.5
-            mon_bonds = int(news['budget']) * 0.5
-
-        stock = Stock(money=mon_stoks, shorts=bool(news['shorts']))
-        stock.sharp()
-        stock.profit()
-        stock.volatility()
-        name_file = stock.plot()
-        bond = Bond()
-        bond.get_bonds(mon_bonds, int(news['length_invest_horizon']))
-
-        with open(name_file, 'rb') as file:
-            image_binary = file.read(-1)
-        response = make_response(image_binary)
-        response.headers.set('Content-Type', 'image/png')
-        response.headers.set(
-            'Content-Disposition', 'attachment', filename=name_file)
-        return response
+        return 'ok'
 
     def post(self):
         args = parser.parse_args()
@@ -87,6 +54,7 @@ class Briefcase(Resource):
         # name_file = stock.plot()
         bond = Bond()
         gbonds = bond.get_bonds(mon_bonds, int(news['length_invest_horizon']))
+        bd = bond.buy_bond(mon_bonds, 2022, gbonds)
 
         # with open(name_file, 'rb') as file:
         #     image_binary = file.read(-1)
@@ -109,7 +77,8 @@ class Briefcase(Resource):
                 }
             },
             'bonds': gbonds,
-            'yield': profit
+            'yield': profit,
+            'total_balance': bd
         })
 
 

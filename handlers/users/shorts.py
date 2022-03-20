@@ -43,6 +43,7 @@ async def buying_pear(call: CallbackQuery, state: FSMContext):
         'tg_id': data['tg_id'],
         'shorts': data['short']
     }).json()
+    # print(json_resp)
     list_bonds = []
     for item in json_resp['bonds']:
         list_bonds.append(
@@ -73,6 +74,8 @@ async def buying_pear(call: CallbackQuery, state: FSMContext):
     await call.message.answer(msg)
     await call.message.answer('📜 Данные об облигациях\n', reply_markup=main_menu1)
     await call.message.answer(''.join(list_bonds))
+    await call.message.answer('💸 Общий остаток средств 💸\n', reply_markup=main_menu1)
+    await call.message.answer('\n'.join(json_resp['total_balance']), reply_markup=main_menu1)
 
 
 @dp.callback_query_handler(text_contains="csv", state=StateBot.Money)
@@ -94,7 +97,7 @@ async def buying_pear(call: CallbackQuery, state: FSMContext):
     path_bond = f"portfolio_with_bonds_{dt.datetime.now().strftime('%d-%m-%Y')}.csv"
     with open(path_bond, 'w') as f:
         wr = csv.DictWriter(f, ["count", "coupon_yield", "name", "price",
-                                "repayment_year", "spent_for_years"])
+                                "repayment_year", "spent_for_years", "id"])
         wr.writeheader()
         wr.writerows(json_resp["bonds"])
 
